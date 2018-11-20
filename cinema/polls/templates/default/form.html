@@ -1,0 +1,116 @@
+{% extends "default/index.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            Book a ticket
+        </div>
+        <div class="panel-body">
+            <div class="col-xs-8 col-xs-offset-2">
+                <form action="/order/send" class="form-horizontal" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Select film</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select required="required" name="film" class="form-control" id="film">
+                                <option value="0" disabled="disabled" style="display: none" selected="selected">---</option>
+                                {% for film in films %}
+                                <option value="{{ film.id }}">"{{ film.name }}" Duration: {{film.duration}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Select cinema</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select required="required" name="cinema" class="form-control" id="cinema">
+                                <option value="0" disabled="disabled" style="display: none" selected="selected">---</option>
+                                {% for cinema in cinemas %}
+                                <option value="{{ cinema.id }}">"{{ cinema.name }}" Address: {{cinema.address}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Select hall</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select required="required" name="hall" class="form-control" id="hall">
+                                <option value="0" disabled="disabled" style="display: none" selected="selected">---</option>
+                                {% for hall in halls %}
+                                <option value="{{ hall.id }}" data-chained="{{ hall.cinema_id }}">{{ hall.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Select seance</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select required="required" name="seance" class="form-control" id="seance">
+                                <option value="0" disabled="disabled" style="display: none" selected="selected">---</option>
+                                {% for seance in seances %}
+                                <option value="{{ seance.id }}" data-chained="{{ seance.hall_id }}+{{ seance.film_id }}">{{ seance.time }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Select seat</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select required="required" name="place" class="form-control" id="seats">
+                                <option value="0" disabled="disabled" style="display: none" selected="selected">---</option>
+                                {% for seance in seances %}
+                                    {% with ''|center:seance.hall.capacity as range %}
+                                        {% for seat in range %}
+                                            {% if forloop.counter in booked_seats %}
+                                                <option value="{{ forloop.counter }}" data-chained="{{ seance.id }}" disabled="disabled">№{{ forloop.counter }}</option>
+                                            {% else %}
+                                                <option value="{{ forloop.counter }}" data-chained="{{ seance.id }}">№{{ forloop.counter }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Write name</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input name="user_name" type="text" class="form-control" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Write phone</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input name="user_phone" type="text" class="form-control" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Write email</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input name="user_email" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <button class="btn btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
